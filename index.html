@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset=utf-8 />
+  <meta
+  name="viewport"
+  content="initial-scale=1,maximum-scale=1,user-scalable=no"
+/>
+<link
+  href="https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.min.css"
+  rel="stylesheet"
+/>
+<script src='https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.js'></script>
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+/>
+
+<style>
+  
+	body {
+		margin: 0;
+		padding: 0;
+		background: #6b6b6b;
+		font-family: 'Franklin Gothic', sans-serif;
+		color: #000000;
+	}
+  
+	h1 {
+		display: inline-block;
+		color: #140a2e;
+		font-weight: bold;
+		font-size: 25px;
+	}
+  
+  
+	h2 { width:100%; text-align:center; border-bottom: 1px solid #000; line-height:0.1em; margin:10px 0 20px; font-size: 21px } 
+  
+	h2 span { background:#fff; padding:0 10px; }
+  
+	h3 {
+		display: inline-block;
+		color: #140a2e;
+		font-size: 21px;
+	}
+  
+  
+	h4 {
+		display: inline-block;
+		color: #000000;
+		font-size: 17px;
+	}
+  
+	h5 {
+		display: inline-block;
+		color: #000000;
+		font-size: 18px;
+	}
+  
+	h6 {
+		display: inline-block;
+		color: #140a2e;
+		font-weight: bold;
+		font-size: 25px;
+	}
+  
+	#map {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 84%;
+	}
+  
+	.leaflet-tooltip {
+  min-width: 300px;
+  font-size: 140%;
+  white-space: normal;
+  }
+  
+  .leaflet-center {
+	  left: 50%;
+	  transform: translate(-50%, 0%);
+  }
+  
+  .legend {
+	padding: 6px 6px;
+	font: 14px 'Franklin Gothic', sans-serif;
+	background: white;
+	background: rgba(255, 255, 255, 0.8);
+	line-height: 24px;
+	color: #555;
+  }
+  .legend h4 {
+	text-align: center;
+	font-size: 16px;
+	margin: 2px 12px 8px;
+	color: #777;
+  }
+  
+  .legend span {
+	position: relative;
+	bottom: 3px;
+  }
+  
+  .legend i {
+	width: 18px;
+	height: 18px;
+	float: left;
+	margin: 0 8px 0 0;
+	opacity: 0.7;
+  }
+  
+  .titlebar i.icon {
+	background-size: 18px;
+	background-color: rgba(255, 255, 255, 1);
+  }
+  
+  .titlebar {
+	padding: 6px 6px;
+	font: 14px 'Franklin Gothic Demi', sans-serif;
+	background: white;
+	background: rgba(255, 255, 255, 0.8);
+	color: #555;
+  }
+  .titlebar h4 {
+	text-align: center;
+	font-size: 16px;
+	margin: 2px 12px 8px;
+	color: #777;
+  }
+  
+  .titlebar span {
+	position: relative;
+	bottom: 3px;
+  }
+  
+  .titlebar i {
+	width: 18px;
+	height: 18px;
+	float: left;
+	margin: 0 8px 0 0;
+	opacity: 0.7;
+  }
+  
+  
+  
+  .legend i.icon {
+	background-size: 18px;
+	background-color: rgba(255, 255, 255, 1);
+  }
+  
+	label {
+		font-size: 1.1em;
+		font-weight: bold;
+	}
+  
+	footer {
+		padding: 6px;
+		width: 100%;
+		float: center;
+	}
+  
+	p {
+		font-size: 1em;
+		color: #000000;
+	}
+  
+	.link {
+		font-size: 1em;
+		color: #20651e;
+		font-weight: bold;
+	}
+  
+	  li {
+	  list-style-type: square;
+	  list-style-position: outside;
+	  margin-left: 1.2em;
+	  text-indent: 0em;
+	  font-size: 1em;
+  }
+  
+	.max-image-width {
+			  width: 100%;
+		  }
+  
+	  .sidebar {
+		  width: 16%
+	  }
+	  
+  </style>
+</head>
+<body>
+	<div class='flex-parent viewport-full relative scroll-hidden'>
+	  <div class='sidebar'>
+		<div class='flex-parent flex-parent--column viewport-third h-full-ml hmax-full bg-white py18 px12'>
+		  <div class='flex-child flex-child--grow px40 py40 scroll-auto list-style-type: circle'>
+			  <div class='align-center'><h2><span>Toggle</span></h2>
+			  <a class='link' href='https://nybsd.github.io/699county/'>County</a> |
+			  <a class='link' href='https://nybsd.github.io/699assembly/'>Assembly</a> |
+			  <a class='link' href='https://nybsd.github.io/699senate/'>Senate</a> <br><br></div>
+			<h2><span>About Imidacloprid</span></h2>
+			<p>Imidacloprid is one of several systemic insecticides belonging to a class of neurotoxic chemicals called neonicotinoids. Neonicotinoids decimate New York's bee and wildlife populations, extensively contaminate our water and lands, and threaten the health of our residents. While DEC has <a class='link' href='https://www.dec.ny.gov/press/124619.html'>recently taken steps</a> to restrict the use of neonicotinoid pesticides, further action is required through the <b>Birds and Bees Protection Act</b> (<a class='link' href='https://www.nysenate.gov/legislation/bills/2021/s699'>S.699B Hoylman</a>/<a class='link' href='https://nyassembly.gov/leg/?bn=A07429&term=2021'>A.7429 Englebright</a>) to protect New Yorkers' health, farmlands and wildlife.</p><br>
+			<h2><span>About This Map</span></h2>
+		  <p>This map was made using data from the <a class='link' href='https://www.waterqualitydata.us/'>Water Quality Portal</a>, a collaborative project from the United States Geological Survey, the Environmental Protection Agency, and over 400 state, federal, tribal, and local agencies.</p>
+		  </div>
+		  <footer class='bg-gray-faint align-center'>
+			<img class="max-image-width" src="images/nybsd.png" title="NYBSD">
+			  <p>Map by
+				<a class='link' href='mailto:greg@nybsd.org'>NYBSD</a>.</p>
+		  </footer>
+		</div>
+	  </div>
+	  <div class='flex-child flex-child--grow viewport-twothirds viewport-full-ml'>
+		<div id="map" class='viewport-twothirds viewport-full-ml'></div>
+	  </div>
+	</div>
+  </label>
+  </div>
+
+<script src="data/customleaflet.js"></script>
+	<script src="data/districts.js"></script>
+  <script src="data/neonic.js"></script>
+   
+ 	    <script>
+		// map options
+		var options = {
+		  center: [40.828727354465805, -73.85961179058009],
+		  zoom: 7.4,
+		  maxZoom: 18,
+		  minZoom: 7,
+		  dragging: false,
+		  zoomSnap: .2,
+          dragging: true,
+          maxBounds: [ [45.21, -71.887],
+    	[40.5, -79.18] ]
+		};
+  
+		// create a Leaflet map in our division container with id of 'map'
+		var map = L.map("map", options);
+  
+		// Leaflet providers base map URL
+		var basemap_source =
+		  "https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png";
+  
+		// Leaflet providers attributes
+		var basemap_options = {
+		  attribution: 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
+		  subdomains: "abcd",
+		};
+  
+		// request some basemap tiles and add to the map
+		var tiles = L.tileLayer(basemap_source, basemap_options).addTo(map);
+
+		var commonStyles = {
+		  weight: 1,
+		  stroke: 1,
+		  fillOpacity: 2,
+		};
+
+		var districting = L.geoJson(district, {
+		  filter: function (feature) {
+			if (feature.properties) {
+			  return feature;
+			}
+		  }, 
+		  style: function (feature) {
+			if (feature.properties.target)
+			return {
+			  color: "#FFFFFF",
+			  fillColor: "#20651e",
+			  fillOpacity: .7,
+			} 
+			else {
+			return {
+			  color: "#FFFFFF",
+			  fillColor: "#20651e",
+			  fillOpacity: .8,
+			};
+		  }},
+		  onEachFeature: function (feature, layer) {
+			if (feature.properties.target) layer.on("mouseover", function () {
+			  layer.setStyle({
+				fillColor: "#d3e9d2",
+				fillOpacity: .7,
+			  });
+			layer.on("mouseout", function () {
+				layer.setStyle({
+				fillColor: "#20651e",
+				fillOpacity: .8,
+			  })
+			})
+			})
+			else layer.on("mouseover", function () {
+			  layer.setStyle({
+				fillColor: "#d3e9d2",
+				fillOpacity: .7,
+			  }); 
+			 layer.on("mouseout", function () {
+			  layer.setStyle({
+			  fillColor: "#20651e",
+			  fillOpacity: .8,
+			  });
+			})
+			});
+			layer.bindPopup(
+			  "<b><h3>Senate District " +
+				layer.feature.properties.DISTRICT +
+				"</b></h3><br>" +
+				"<b><h4>" +
+				layer.feature.properties.NAME +	
+					"</b></big>" +
+				"<br><b>% BIPOC</b> " +
+				layer.feature.properties.bipoc +
+				"<br><b>Party: </b>" +
+				layer.feature.properties.party +
+                "</h3>"
+			);
+		  },
+		  }).addTo(map);
+
+		var ghge = L.geoJson(neonic, {
+		  pointToLayer: function (feature, latlng) {
+			return L.circleMarker(latlng, commonStyles);
+		  },
+		  filter: function (feature) {
+			if (feature.properties) {
+			  return feature;
+			}
+		  }, 
+		  style: function (feature) {
+			return {
+			  color: "#f6f6e9",
+			  fillColor: "#272727",
+			  fillOpacity: 1,
+			  radius: 15,
+			  weight: 4,
+			};
+		  },
+		  onEachFeature: function (feature, layer) {
+			layer.on("mouseover", function () {
+			  layer.setStyle({
+				fillColor: "#636161",
+				fillOpacity: 1,
+			  });
+			});
+			layer.on("mouseout", function () {
+			  layer.setStyle({
+				fillColor: "#272727",
+				fillOpacity: 1,
+			  });
+			});
+			layer.bindPopup(
+			  "<b><h3>" +
+				layer.feature.properties.MonitoringLocationIdentifier +
+				"</b></h3><br>" +
+				"<h4><b>" +
+				layer.feature.properties.ResultMeasureValue +			
+				" ng/l</b> imidacloprid was detected in the <b>" +
+				layer.feature.properties.ActivityMediaSubdivisionName +
+                "</b> at this site. </h4>" 
+			);
+		  },
+		}).addTo(map);
+
+var titlebar = L.control({ position: "topcenter" });
+
+titlebar.onAdd = function(map) {
+  var div = L.DomUtil.create("div", "titlebar");
+  div.innerHTML += "<h6>Imidacloprid Contamination in NYS, 2017-2022, Senate View</h6><br>";
+  return div;
+};
+
+titlebar.addTo(map);
+
+
+	  </script>
+
+</body>
+
+</html>
